@@ -18,4 +18,4 @@ def video_capture(cam):
                    b'Content-Type: image/jpeg\r\n\r\n' + jpg.tobytes() + b'\r\n')
 
 def stop_camera(cam):
-    cam.release()
+    cam.release()  
