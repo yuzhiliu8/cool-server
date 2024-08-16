@@ -1,0 +1,16 @@
+.LoginPage{
+    background-color: grey;
+    min-height:100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.login-container{
+    background-color: lightblue;
+    height:50vh;
+    width:50vh;
+    display:flex;
+    justify-content: center;
+    align-items: center;
+}
