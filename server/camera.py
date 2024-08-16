@@ -1,17 +1,21 @@
 import cv2 as cv
+import numpy as np
 
-def video_capture():
-    vid = cv.VideoCapture(0)
+def start_camera():
+    cam = cv.VideoCapture(0)
+    return cam
+
+def video_capture(cam):
 
     while True:
-        ret, frame = vid.read()
+        ret, frame = cam.read()
         if not ret:
             print('cannot capture frame')
             break
-        cv.imshow('frame', frame)
-        if cv.waitKey(1) == ord('q'):
-            break
-    vid.release()
-    cv.destroyAllWindows()
+        jpg = cv.imencode('.jpg', frame)[1]
 
-video_capture()
+        yield (b'--frame\r\n'
+                   b'Content-Type: image/jpeg\r\n\r\n' + jpg.tobytes() + b'\r\n')
+
+def stop_camera(cam):
+    cam.release()
