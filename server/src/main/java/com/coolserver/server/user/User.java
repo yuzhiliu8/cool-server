@@ -1,7 +1,9 @@
 package com.coolserver.server.user;
 
 import com.coolserver.server.role.RoleType;
+import com.coolserver.server.util.Util;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -16,6 +18,7 @@ import jakarta.persistence.Table;
 @Table(name = "users")
 public class User {
 
+
     @Id
     @SequenceGenerator(name = "user_sequence", sequenceName = "user_sequence", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "user_sequence")
@@ -26,30 +29,31 @@ public class User {
 
     private String firstName;
     private String lastName;
+
+    @Column(unique=true)
     private String email;
+
     private String password;
-    private String salt;
+    private String salt = Util.generateSalt();
     
     public User(){
     }
 
-    public User(RoleType roleType, String firstName, String lastName, String email, String password, String salt){
+    public User(RoleType roleType, String firstName, String lastName, String email, String password){
         this.roleType = roleType;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
-        this.password = password;
-        this.salt = salt;
+        this.password = Util.getHashedPassword(password, salt);
     }
 
-    public User(Long id, RoleType roleType, String firstName, String lastName, String email, String password, String salt){
+    public User(Long id, RoleType roleType, String firstName, String lastName, String email, String password){
         this.roleType = roleType;
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
-        this.password = password;
-        this.salt = salt;
+        this.password = Util.getHashedPassword(password, salt);
     }
 
     public Long getId(){
@@ -97,19 +101,16 @@ public class User {
     }
 
     public void setPassword(String password){
-        this.password = password;
+        this.password = Util.getHashedPassword(password, salt);
     }
 
     public String getSalt(){
         return salt;
     }
 
-    public void setSalt(String salt){
-        this.salt = salt;
-    }
-
     public String toString(){
        return String.format("User{id = %s email = %s firstName = %s lastName = %s}", id, email, firstName, lastName);
     }
+
 
 }
