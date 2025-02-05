@@ -19,19 +19,17 @@ public class ServerApplication {
 
 	@Bean
 	CommandLineRunner run(UserRepository userRepo, UserService userService){ return args -> {
+			String salt = userService.generateSalt();
+			String hp = userService.getHashedPassword("password", salt);
 			User u1 = new User();
 			u1.setRoleType(RoleType.ADMIN);
 			u1.setFirstName("Yuzhi");
 			u1.setLastName("Liu");
 			u1.setEmail("yliu08@gmail.com");
-			u1.setPassword("password");
-			u1.setSalt("salt");
+			u1.setPassword(hp);
+			u1.setSalt(salt);
 			userRepo.save(u1);
 
-			String salt = userService.generateSalt();
-			String hp = userService.getHashedPassword("password", salt);
-			System.out.println(salt);
-			System.out.println(hp);
 		};
 	}
 }
