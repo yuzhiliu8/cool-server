@@ -1,7 +1,8 @@
 package com.coolserver.server.auth;
 
-import java.time.LocalDate;
+import java.time.LocalTime;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -19,15 +20,17 @@ public class AuthRequest{
     private Long id;
 
     private String email;
+
+    @Column(nullable=true)
     private String hash;
-    private LocalDate time;
+    private LocalTime time;
     private boolean success;
 
 
     public AuthRequest(){
     }
 
-    public AuthRequest(String email, String hash, LocalDate time, boolean success){
+    public AuthRequest(String email, String hash, LocalTime time, boolean success){
         this.email = email;
         this.hash = hash;
         this.time = time;
@@ -35,7 +38,7 @@ public class AuthRequest{
     }
 
 
-    public AuthRequest(Long id, String email, String hash, LocalDate time, boolean success){
+    public AuthRequest(Long id, String email, String hash, LocalTime time, boolean success){
         this.id = id;
         this.email = email;
         this.hash = hash;
@@ -67,11 +70,11 @@ public class AuthRequest{
         this.hash = hash;
     }
 
-    public LocalDate getTime() {
+    public LocalTime getTime() {
         return time;
     }
 
-    public void setTime(LocalDate time) {
+    public void setTime(LocalTime time) {
         this.time = time;
     }
 
