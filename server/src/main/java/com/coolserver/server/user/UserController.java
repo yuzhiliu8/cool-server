@@ -1,10 +1,13 @@
 package com.coolserver.server.user;
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+
 
 @RestController
 @RequestMapping("/cool-server/api/users")
@@ -20,4 +23,10 @@ public class UserController {
     public List<User> test(){
         return userService.getUsers();
     }
+
+    @PostMapping("/create-user")
+    public User createUser(@RequestBody User user){
+        return userService.createUser(user);
+    }
+    
 }

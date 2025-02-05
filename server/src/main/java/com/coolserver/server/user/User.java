@@ -3,6 +3,8 @@ package com.coolserver.server.user;
 import com.coolserver.server.role.RoleType;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -18,15 +20,16 @@ public class User {
     @SequenceGenerator(name = "user_sequence", sequenceName = "user_sequence", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "user_sequence")
     private Long id;
-
+        
+    @Enumerated(EnumType.STRING)
     private RoleType roleType;
+
     private String firstName;
     private String lastName;
     private String email;
     private String password;
     private String salt;
     
-
     public User(){
     }
 

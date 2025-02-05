@@ -47,4 +47,8 @@ public class UserService {
 
         return hex;
     }
+
+    public User createUser(User user) {
+        return userRepository.save(user);
+    }
 }
