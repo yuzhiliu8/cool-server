@@ -3,9 +3,10 @@ package com.coolserver.server.auth;
 import java.time.LocalTime;
 import java.util.Optional;
 
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import com.coolserver.server.session.Session;
+import com.coolserver.server.session.SessionRepository;
 import com.coolserver.server.user.User;
 import com.coolserver.server.user.UserRepository;
 import com.coolserver.server.util.Util;
@@ -15,13 +16,15 @@ public class AuthService {
 
     private UserRepository userRepository;
     private AuthRepository authRepository;
+    private SessionRepository sessionRepository;
 
-    public AuthService(UserRepository userRepository, AuthRepository authRepository){
+    public AuthService(UserRepository userRepository, AuthRepository authRepository, SessionRepository sessionRepository){
         this.userRepository = userRepository;
         this.authRepository = authRepository;
+        this.sessionRepository = sessionRepository;
     }
 
-    public ResponseEntity<String> authenticateUser(String email, String password){
+    public Session authenticateUser(String email, String password){
         AuthRequest authRequest = new AuthRequest();
         authRequest.setEmail(email);
         authRequest.setTime(LocalTime.now());
@@ -30,7 +33,7 @@ public class AuthService {
         if (!Ouser.isPresent()){
             authRequest.setSuccess(false);
             authRepository.save(authRequest);
-            return ResponseEntity.status(401).body("email is not registered");
+            throw new IllegalArgumentException("Incorrect email/password");
         }
 
         User user = Ouser.get();
@@ -42,11 +45,13 @@ public class AuthService {
         if (!user.getPassword().equals(hashedPwd)){
             authRequest.setSuccess(false);
             authRepository.save(authRequest);
-            return ResponseEntity.status(401).body("incorrect password");
+            throw new IllegalArgumentException("Incorrect email/password");
         }
-
         authRequest.setSuccess(true);
         authRepository.save(authRequest);
-        return ResponseEntity.ok("authentication success");
+        
+        Session s = new Session(user.getId());
+        s = sessionRepository.save(s);
+        return s;
     }
 }

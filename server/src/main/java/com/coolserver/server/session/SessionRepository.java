@@ -1,9 +1,9 @@
-package com.coolserver.server.auth;
+package com.coolserver.server.session;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface AuthRepository extends JpaRepository<AuthRequest, Long>{
+public interface SessionRepository extends JpaRepository<Session, Long>{
 
 }
