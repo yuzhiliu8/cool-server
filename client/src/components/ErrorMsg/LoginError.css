@@ -1,0 +1,13 @@
+.login-error{
+    background-color: #ff7f7f;
+    padding:3px;
+
+    display:flex;
+    align-items: center;
+    gap:10px;
+}
+
+.le-error-icon{
+    height:20px;
+    width:20px;
+}
