@@ -3,6 +3,7 @@ package com.coolserver.server.auth;
 import java.time.LocalTime;
 import java.util.Optional;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.coolserver.server.session.Session;
@@ -24,7 +25,7 @@ public class AuthService {
         this.sessionRepository = sessionRepository;
     }
 
-    public Session authenticateUser(String email, String password){
+    public ResponseEntity<AuthResponse> authenticateUser(String email, String password){
         AuthRequest authRequest = new AuthRequest();
         authRequest.setEmail(email);
         authRequest.setTime(LocalTime.now());
@@ -33,7 +34,7 @@ public class AuthService {
         if (!Ouser.isPresent()){
             authRequest.setSuccess(false);
             authRepository.save(authRequest);
-            throw new IllegalArgumentException("Incorrect email/password");
+            return ResponseEntity.status(401).body(new AuthResponse(false, "Incorrect email/password", null));
         }
 
         User user = Ouser.get();
@@ -45,13 +46,13 @@ public class AuthService {
         if (!user.getPassword().equals(hashedPwd)){
             authRequest.setSuccess(false);
             authRepository.save(authRequest);
-            throw new IllegalArgumentException("Incorrect email/password");
+            return ResponseEntity.status(401).body(new AuthResponse(false, "Incorrect email/password", null));
         }
         authRequest.setSuccess(true);
         authRepository.save(authRequest);
         
-        Session s = new Session(user.getId());
-        s = sessionRepository.save(s);
-        return s;
+        Session session = new Session(user.getId());
+        session = sessionRepository.save(session);
+        return ResponseEntity.ok(new AuthResponse(true, "Login Successful", session));
     }
 }

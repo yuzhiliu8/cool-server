@@ -37,5 +37,19 @@ public class Session {
     public Long getUserId(){
         return userId;
     }
+
+    public LocalTime getExpireDate(){
+        return expireDate;
+    }
+
+    public void setExpireDate(LocalTime expireDate){
+        this.expireDate = expireDate;
+    }
+
+    @Override
+    public String toString() {
+        return "Session [sessionId=" + sessionId + ", userId=" + userId + ", expireDate=" + expireDate + "]";
+    }
+
 }
 
