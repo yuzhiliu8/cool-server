@@ -1,6 +1,6 @@
 package com.coolserver.server.auth;
 
-import java.time.LocalTime;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import org.springframework.http.ResponseEntity;
@@ -25,16 +25,16 @@ public class AuthService {
         this.sessionRepository = sessionRepository;
     }
 
-    public ResponseEntity<AuthResponse> authenticateUser(String email, String password){
+    public ResponseEntity<APIResponse<Session>> authenticateUser(String email, String password){
         AuthRequest authRequest = new AuthRequest();
         authRequest.setEmail(email);
-        authRequest.setTime(LocalTime.now());
+        authRequest.setTime(LocalDateTime.now());
         
         Optional<User> Ouser = userRepository.findByEmail(email);
         if (!Ouser.isPresent()){
             authRequest.setSuccess(false);
             authRepository.save(authRequest);
-            return ResponseEntity.status(401).body(new AuthResponse(false, "Incorrect email/password", null));
+            return ResponseEntity.status(401).body(new APIResponse<Session>(false, "Incorrect email/password", null));
         }
 
         User user = Ouser.get();
@@ -46,13 +46,27 @@ public class AuthService {
         if (!user.getPassword().equals(hashedPwd)){
             authRequest.setSuccess(false);
             authRepository.save(authRequest);
-            return ResponseEntity.status(401).body(new AuthResponse(false, "Incorrect email/password", null));
+            return ResponseEntity.status(401).body(new APIResponse<Session>(false, "Incorrect email/password", null));
         }
         authRequest.setSuccess(true);
         authRepository.save(authRequest);
         
         Session session = new Session(user.getId());
         session = sessionRepository.save(session);
-        return ResponseEntity.ok(new AuthResponse(true, "Login Successful", session));
+        return ResponseEntity.ok(new APIResponse<Session>(true, "Login Successful", session));
+    }
+
+    public boolean validateSession(Long sessionId){
+        Optional<Session> Osession = sessionRepository.findById(sessionId);
+        if (!Osession.isPresent()){
+            return false;
+        }
+
+        Session session = Osession.get();
+        if (session.getExpireDate().isBefore(LocalDateTime.now())){  //session expired
+            return false;
+        }
+
+        return true;
     }
 }

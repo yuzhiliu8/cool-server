@@ -1,19 +1,15 @@
 package com.coolserver.server.auth;
 
-import com.coolserver.server.session.Session;
-
-public class AuthResponse {
+public class APIResponse<T> {
     
     private boolean success;
     private String message;
-    private Session session;
+    private T data;
 
-    
-
-    public AuthResponse(boolean success, String message, Session session) {
+    public APIResponse(boolean success, String message, T data) {
         this.success = success;
         this.message = message;
-        this.session = session;
+        this.data = data;
     }
 
     public boolean isSuccess() {
@@ -32,17 +28,17 @@ public class AuthResponse {
         this.message = message;
     }
 
-    public Session getSession(){
-        return session;
+    public T getData(){
+        return data;
     }
 
-    public void setSession(Session session){
-        this.session = session;
+    public void setSession(T data){
+        this.data = data;
     }
 
     @Override
     public String toString() {
-        return "AuthResponse [success=" + success + ", message=" + message + ", Session=" + session
+        return "AuthResponse [success=" + success + ", message=" + message + ", Data" + data
                 + "]";
     }
 }

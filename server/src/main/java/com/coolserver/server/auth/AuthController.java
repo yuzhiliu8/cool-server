@@ -4,6 +4,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.coolserver.server.global.AppConstants;
+import com.coolserver.server.session.Session;
+
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -26,21 +29,22 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<AuthResponse> login(@RequestParam String email, @RequestParam String password, HttpServletResponse response){
-        ResponseEntity<AuthResponse> authResponse = authService.authenticateUser(email, password);
+    public ResponseEntity<APIResponse<Session>> login(@RequestParam String email, @RequestParam String password, HttpServletResponse response){
+        ResponseEntity<APIResponse<Session>> apiResponse= authService.authenticateUser(email, password);
 
-        if (!authResponse.getBody().isSuccess()){
-            return authResponse;
+        if (!apiResponse.getBody().isSuccess()){
+            return apiResponse;
         }
 
-        int cookieLength = 60 * 60 * 24; //1 day
-        Cookie sessionCookie = new Cookie("sessionId", authResponse.getBody().getSession().getSessionId().toString());
+        int cookieLength = 60 * 60 * 24 * AppConstants.SESSION_LENGTH;
+
+        Cookie sessionCookie = new Cookie("sessionId", apiResponse.getBody().getData().getSessionId().toString());
         sessionCookie.setMaxAge(cookieLength);
         sessionCookie.setSecure(true);
         sessionCookie.setHttpOnly(true);
         sessionCookie.setPath("/");
 
         response.addCookie(sessionCookie);
-        return authResponse;
+        return apiResponse;
     }
 }

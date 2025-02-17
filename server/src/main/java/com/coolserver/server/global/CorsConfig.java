@@ -1,4 +1,4 @@
-package com.coolserver.server.GlobalConfig;
+package com.coolserver.server.global;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;

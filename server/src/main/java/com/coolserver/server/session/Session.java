@@ -1,7 +1,10 @@
 package com.coolserver.server.session;
 
-import java.time.LocalTime;
+import java.time.LocalDateTime;
 
+import com.coolserver.server.global.AppConstants;
+
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -19,15 +22,22 @@ public class Session {
     @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="session_generator")
     private Long sessionId;
     private Long userId;
-    private LocalTime expireDate;
 
+    @Column(nullable = false)
+    private LocalDateTime expireDate;
+
+    public Session(){
+
+    }
     public Session(Long sessionId, Long userId){
         this.sessionId = sessionId;
         this.userId = userId;
+        this.expireDate = LocalDateTime.now().plusDays(AppConstants.SESSION_LENGTH);
     }
 
     public Session(Long userId){
         this.userId = userId;
+        this.expireDate = LocalDateTime.now().plusDays(AppConstants.SESSION_LENGTH);
     }
 
     public Long getSessionId(){
@@ -38,11 +48,11 @@ public class Session {
         return userId;
     }
 
-    public LocalTime getExpireDate(){
+    public LocalDateTime getExpireDate(){
         return expireDate;
     }
 
-    public void setExpireDate(LocalTime expireDate){
+    public void setExpireDate(LocalDateTime expireDate){
         this.expireDate = expireDate;
     }
 
