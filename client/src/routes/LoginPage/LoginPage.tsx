@@ -1,8 +1,9 @@
 import './LoginPage.css';
-import { useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { API_ORIGIN } from '../../util/Constants';
+import { APIResponse, Session } from '../../interfaces/APIResponse';
+import { useNavigate } from 'react-router';
 import LoginError from '../../components/ErrorMsg/LoginError';
-import { AuthResponse } from '../../interfaces/AuthResponse';
 
 
 
@@ -10,10 +11,17 @@ export default function LoginPage() {
   const [ErrorMsg, setErrorMsg] = useState<string>("");
   const emailRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
+  const navigate = useNavigate();
 
-  const handleLogin = async () : Promise<void> => {
-    const email:string = (emailRef.current as HTMLInputElement).value;
-    const password:string = (passwordRef.current as HTMLInputElement).value;
+  const handleLogin = async (e: React.FormEvent | React.MouseEvent) : Promise<void> => {
+    e.preventDefault();
+    const email:string = emailRef.current?.value ?? "";
+    const password:string = passwordRef.current?.value ?? "";
+
+    if (email === "" || password === ""){
+      setErrorMsg("Please Fill Out Fields");
+      return;
+    }
 
     const formData = new FormData();
     formData.append("email", email);
@@ -24,16 +32,21 @@ export default function LoginPage() {
       body: formData,
       credentials: "include",
     });
-    const authResponse:AuthResponse = await response.json();
+
+    const apiResponse:APIResponse<Session> = await response.json();
+
     if (!response.ok){
       if (response.status === 401){
-        setErrorMsg(authResponse.message);
+        setErrorMsg(apiResponse.message);
+        passwordRef.current!.value = "";
+        passwordRef.current!.focus();
         return;
       }
     }
 
     setErrorMsg("");
-    console.log(authResponse);
+    console.log(apiResponse);
+    navigate("/home");
   }
   return (
     <div className="login-page">
@@ -41,7 +54,7 @@ export default function LoginPage() {
       <div className="lp-login-box">
         <div className="lp-lb-marg">
           <div className="lp-lb-1">Sign in</div>
-          <div className="lp-lb-form">
+          <form className="lp-lb-form" onSubmit={handleLogin}>
             <input ref={emailRef} className="lp-form-input" type="email" placeholder='Enter Email'/>
             <input ref={passwordRef} className="lp-form-input" type="password" placeholder='Enter Password'/>
 
@@ -56,7 +69,7 @@ export default function LoginPage() {
                 <div className="lp-checkbox-label" >Remember Me</div>
               </div>
             <button className="lp-login-btn" onClick={handleLogin}>Login</button>
-          </div>
+          </form>
         </div>
       </div>
     </div>
