@@ -3,6 +3,7 @@ package com.coolserver.server.user;
 import com.coolserver.server.role.RoleType;
 
 public class UserDTO {
+    private Long id;
     private String firstName;
     private String lastName;
     private String email; 
@@ -14,12 +15,21 @@ public class UserDTO {
 
     public static UserDTO fromUser(User user){
         UserDTO userDTO = new UserDTO();
+        userDTO.setId(user.getId());
         userDTO.setFirstName(user.getFirstName());
         userDTO.setLastName(user.getLastName());
         userDTO.setEmail(user.getEmail());
         userDTO.setRoleType(user.getRoleType());
 
         return userDTO;
+    }
+
+    public Long getId(){
+        return id;
+    }
+
+    public void setId(Long id){
+        this.id = id;
     }
 
     public String getFirstName() {
