@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.coolserver.server.auth.APIResponse;
 import com.coolserver.server.auth.AuthService;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -31,57 +32,61 @@ public class UserController {
     
     //get all users
     @GetMapping("/get-all")
-    public ResponseEntity<APIResponse<List<User>>> getAllUsers(@CookieValue(value = "sessionId", defaultValue = "-1") String cookie){
+    public ResponseEntity<APIResponse<List<UserDTO>>> getAllUsers(@CookieValue(value = "sessionId", defaultValue = "-1") String cookie){
 
         boolean validate = authService.validateSession(Long.parseLong(cookie));
         if (cookie.equals("-1") || validate == false){
-            APIResponse<List<User>> apiResponse = new APIResponse<List<User>>(false, "401 session unauthorized", null);
+            APIResponse<List<UserDTO>> apiResponse = new APIResponse<List<UserDTO>>(false, "401 session unauthorized", null);
             return ResponseEntity.status(401).body(apiResponse);
         }
         List<User> users = userService.getUsers();
-        APIResponse<List<User>> apiResponse = new APIResponse<List<User>>(true, "200 OK", users);
+        List<UserDTO> userDTOs = new ArrayList<UserDTO>();
+        for (int i = 0; i < users.size(); i++){
+            userDTOs.add(UserDTO.fromUser(users.get(i)));
+        }
+        APIResponse<List<UserDTO>> apiResponse = new APIResponse<List<UserDTO>>(true, "200 OK", userDTOs);
         return ResponseEntity.ok(apiResponse);
     }
 
     @GetMapping("/get-by-id/{id}")
-    public ResponseEntity<APIResponse<User>> getUserById(
+    public ResponseEntity<APIResponse<UserDTO>> getUserById(
         @PathVariable Long id, 
         @CookieValue(value = "sessionId", defaultValue = "-1") String cookie){
 
         boolean validate = authService.validateSession(Long.parseLong(cookie));
         if (cookie.equals("-1") || validate == false){
-            APIResponse<User> apiResponse = new APIResponse<User>(false, "401 session unauthorized", null);
+            APIResponse<UserDTO> apiResponse = new APIResponse<UserDTO>(false, "401 session unauthorized", null);
             return ResponseEntity.status(401).body(apiResponse);
         }
 
         try{
             User user = userService.getUserById(id);
-            APIResponse<User> apiResponse = new APIResponse<User>(true, "200 OK", user);
+            APIResponse<UserDTO> apiResponse = new APIResponse<UserDTO>(true, "200 OK", UserDTO.fromUser(user));
             return ResponseEntity.ok(apiResponse);
         } catch (IllegalArgumentException e){
-            APIResponse<User> apiResponse = new APIResponse<User>(false, "404 User does not exist", null);
+            APIResponse<UserDTO> apiResponse = new APIResponse<UserDTO>(false, "404 User does not exist", null);
             return ResponseEntity.status(404).body(apiResponse);
         }
     }
 
     @PostMapping("/create")
-    public ResponseEntity<APIResponse<User>> createUser(
+    public ResponseEntity<APIResponse<UserDTO>> createUser(
         @RequestBody User user,
         @CookieValue(value = "sessionId", defaultValue = "-1") String cookie){
 
         boolean validate = authService.validateSession(Long.parseLong(cookie));
         if (cookie.equals("-1") || validate == false){
-            APIResponse<User> apiResponse = new APIResponse<User>(false, "401 session unauthorized", null);
+            APIResponse<UserDTO> apiResponse = new APIResponse<UserDTO>(false, "401 session unauthorized", null);
             return ResponseEntity.status(401).body(apiResponse);
         }
 
         try {
             User savedUser = userService.createUser(user);
-            APIResponse<User> apiResponse = new APIResponse<User>(true, "200 OK", savedUser);
+            APIResponse<UserDTO> apiResponse = new APIResponse<UserDTO>(true, "200 OK", UserDTO.fromUser(savedUser));
             return ResponseEntity.ok(apiResponse);
 
         } catch (DataAccessException e){
-            APIResponse<User> apiResponse = new APIResponse<User>(false, "404 User not unique", null);
+            APIResponse<UserDTO> apiResponse = new APIResponse<UserDTO>(false, "404 User not unique", null);
             return ResponseEntity.status(404).body(apiResponse);
         }
     }
@@ -105,7 +110,7 @@ public class UserController {
     }
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<APIResponse<User>> updateUser(
+    public ResponseEntity<APIResponse<UserDTO>> updateUser(
         @PathVariable Long id, 
         @RequestBody User updatedUser,
         @CookieValue(value = "sessionId", defaultValue = "-1") String cookie){
@@ -113,16 +118,16 @@ public class UserController {
 
         boolean validate = authService.validateSession(Long.parseLong(cookie));
         if (cookie.equals("-1") || validate == false){
-            APIResponse<User> apiResponse = new APIResponse<User>(false, "401 session unauthorized", null);
+            APIResponse<UserDTO> apiResponse = new APIResponse<UserDTO>(false, "401 session unauthorized", null);
             return ResponseEntity.status(401).body(apiResponse);
         }
 
         try {
             User user = userService.updateUser(id, updatedUser);
-            APIResponse<User> apiResponse = new APIResponse<User>(true, "200 OK User successfully updated", user);
+            APIResponse<UserDTO> apiResponse = new APIResponse<UserDTO>(true, "200 OK User successfully updated", UserDTO.fromUser(user));
             return ResponseEntity.ok(apiResponse);
         } catch (IllegalArgumentException e){
-            return ResponseEntity.status(404).body(new APIResponse<User>(false, "404 User does not exist", null));
+            return ResponseEntity.status(404).body(new APIResponse<UserDTO>(false, "404 User does not exist", null));
         }
     }
 }
