@@ -1,16 +1,29 @@
 import React from 'react'
-import { Route } from 'react-router'
+import { API_ORIGIN } from '../../util/Constants';
+import { APIResponse, Session } from '../../interfaces/APIResponse';
+import { useNavigate } from 'react-router';
 
-const PrivateRoute:React.FC<PrivateRouteProps> = ({ path, element}) => {
-    console.log(path, element); 
+const PrivateRoute:React.FC<PrivateRouteProps> = ({ element }) => {
+    const navigate = useNavigate();
+    try{
+        fetch(`${API_ORIGIN}/auth/authenticate`,{ credentials: "include",
+        })
+        .then((response) => {
+            if (!response.ok){
+                console.error("bad response!");
+                navigate('/login');
+            }
+            return response.json();
+        })
+        .then((data:APIResponse<Session>) => {
+            console.log(data);
+        });
+    } catch {
+        console.error("Promise rejected");
+    }
+
     return (
-        <Route path={path} element={element}
-        
-        
-        
-        
-        />
-
+        element
     )
 }
 
@@ -18,6 +31,5 @@ export default PrivateRoute;
 
 
 interface PrivateRouteProps {
-    path: string;
     element: React.ReactNode;
 }
