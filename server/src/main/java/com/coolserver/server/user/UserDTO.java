@@ -10,7 +10,6 @@ public class UserDTO {
     private RoleType roleType;
 
     private UserDTO(){
-
     }
 
     public static UserDTO fromUser(User user){

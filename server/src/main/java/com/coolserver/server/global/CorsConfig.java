@@ -18,6 +18,7 @@ public class CorsConfig {
         return new WebMvcConfigurer(){
             @Override
             public void addCorsMappings(CorsRegistry corsRegistry){
+                // System.out.println(environment.getProperty("CORS_ALLOWED_ORIGIN"));
                 corsRegistry.addMapping("/**")
                 .allowedOrigins(environment.getProperty("CORS_ALLOWED_ORIGIN"))
                 .allowedMethods("GET", "POST", "PUT", "DELETE")

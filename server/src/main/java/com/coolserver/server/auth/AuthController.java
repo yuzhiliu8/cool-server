@@ -11,6 +11,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 
@@ -46,5 +47,23 @@ public class AuthController {
 
         response.addCookie(sessionCookie);
         return apiResponse;
+    }
+
+    @GetMapping("/authenticate")
+    public ResponseEntity<APIResponse<Session>> authenticateSession(@CookieValue(value = "sessionId", defaultValue = "-1") String sessionCookie){
+        boolean validate = authService.validateSession(Long.parseLong(sessionCookie));
+
+        if (sessionCookie.equals("-1") || validate == false){
+            APIResponse<Session> apiResponse = new APIResponse<Session>(false, "401 Session Unauthorized", null);
+            return ResponseEntity.status(401).body(apiResponse);
+        }
+
+        try {
+            Session session = authService.getSessionById(Long.parseLong(sessionCookie));
+            APIResponse<Session> apiResponse = new APIResponse<Session>(true, "200 OK session good", session);
+            return ResponseEntity.ok(apiResponse);
+        } catch (IllegalArgumentException e){
+            return ResponseEntity.status(401).body(new APIResponse<Session>(false, "401 Session unauthorized", null));
+        } 
     }
 }

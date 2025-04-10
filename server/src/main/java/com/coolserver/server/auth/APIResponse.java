@@ -6,6 +6,14 @@ public class APIResponse<T> {
     private String message;
     private T data;
 
+    public static <T> APIResponse<T> UnauthorizedResponse(){
+        return new APIResponse<T>(false, "401 unauthorized", null);
+    }
+
+    public static <T> APIResponse<T> OK(T data){
+        return new APIResponse<T>(true, "200 OK", data);
+    }
+
     public APIResponse(boolean success, String message, T data) {
         this.success = success;
         this.message = message;

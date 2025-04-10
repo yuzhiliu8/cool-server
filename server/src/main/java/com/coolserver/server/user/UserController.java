@@ -35,9 +35,9 @@ public class UserController {
     public ResponseEntity<APIResponse<List<UserDTO>>> getAllUsers(@CookieValue(value = "sessionId", defaultValue = "-1") String cookie){
 
         boolean validate = authService.validateSession(Long.parseLong(cookie));
-        if (cookie.equals("-1") || validate == false){
-            APIResponse<List<UserDTO>> apiResponse = new APIResponse<List<UserDTO>>(false, "401 session unauthorized", null);
-            return ResponseEntity.status(401).body(apiResponse);
+        if (validate == false){
+            APIResponse<List<UserDTO>> body = APIResponse.UnauthorizedResponse(); 
+            return ResponseEntity.status(401).body(body);
         }
         List<User> users = userService.getUsers();
         List<UserDTO> userDTOs = new ArrayList<UserDTO>();
@@ -54,8 +54,8 @@ public class UserController {
         @CookieValue(value = "sessionId", defaultValue = "-1") String cookie){
 
         boolean validate = authService.validateSession(Long.parseLong(cookie));
-        if (cookie.equals("-1") || validate == false){
-            APIResponse<UserDTO> apiResponse = new APIResponse<UserDTO>(false, "401 session unauthorized", null);
+        if (validate == false){
+            APIResponse<UserDTO> apiResponse = APIResponse.UnauthorizedResponse(); 
             return ResponseEntity.status(401).body(apiResponse);
         }
 
@@ -75,8 +75,8 @@ public class UserController {
         @CookieValue(value = "sessionId", defaultValue = "-1") String cookie){
 
         boolean validate = authService.validateSession(Long.parseLong(cookie));
-        if (cookie.equals("-1") || validate == false){
-            APIResponse<UserDTO> apiResponse = new APIResponse<UserDTO>(false, "401 session unauthorized", null);
+        if (validate == false){
+            APIResponse<UserDTO> apiResponse = APIResponse.UnauthorizedResponse();
             return ResponseEntity.status(401).body(apiResponse);
         }
 
@@ -97,8 +97,8 @@ public class UserController {
         @CookieValue(value = "sessionId", defaultValue = "-1") String cookie){
 
         boolean validate = authService.validateSession(Long.parseLong(cookie));
-        if (cookie.equals("-1") || validate == false){
-            APIResponse<String> apiResponse = new APIResponse<String>(false, "401 session unauthorized", null);
+        if (validate == false){
+            APIResponse<String> apiResponse = APIResponse.UnauthorizedResponse(); 
             return ResponseEntity.status(401).body(apiResponse);
         }
         try {
@@ -117,8 +117,8 @@ public class UserController {
 
 
         boolean validate = authService.validateSession(Long.parseLong(cookie));
-        if (cookie.equals("-1") || validate == false){
-            APIResponse<UserDTO> apiResponse = new APIResponse<UserDTO>(false, "401 session unauthorized", null);
+        if (validate == false){
+            APIResponse<UserDTO> apiResponse = APIResponse.UnauthorizedResponse();
             return ResponseEntity.status(401).body(apiResponse);
         }
 

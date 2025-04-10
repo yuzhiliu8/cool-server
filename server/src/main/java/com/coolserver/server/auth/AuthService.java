@@ -69,4 +69,13 @@ public class AuthService {
 
         return true;
     }
+
+    public Session getSessionById(Long sessionId){
+        Optional<Session> Osession = sessionRepository.findById(sessionId);
+        if (!Osession.isPresent()){
+            throw new IllegalArgumentException("Session does not exist!");
+        }
+
+        return Osession.get();
+    }
 }
