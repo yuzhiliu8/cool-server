@@ -21,7 +21,7 @@ public class StorageItem {
     private String name;
     private LocalDateTime date;
     private long size;
-    private String extension;
+    private String contentType;
 
     private Long userId;
 
@@ -29,20 +29,20 @@ public class StorageItem {
     }
 
     
-    public StorageItem(String name, LocalDateTime date, long size, String extension, Long userId) {
+    public StorageItem(String name, LocalDateTime date, long size, String contentType, Long userId) {
         this.name = name;
         this.date = date;
         this.size = size;
-        this.extension = extension;
+        this.contentType = contentType;
         this.userId = userId;
     }
 
-    public StorageItem(Long id, String name, LocalDateTime date, long size, String extension, Long userId) {
+    public StorageItem(Long id, String name, LocalDateTime date, long size, String contentType, Long userId) {
         this.id = id;
         this.name = name;
         this.date = date;
         this.size = size;
-        this.extension = extension;
+        this.contentType = contentType;
         this.userId = userId;
     }
 
@@ -78,12 +78,12 @@ public class StorageItem {
         this.size = size;
     }
 
-    public String getExtension() {
-        return extension;
+    public String getContentType() {
+        return contentType;
     }
 
-    public void setExtension(String extension) {
-        this.extension = extension;
+    public void setContentType(String contentType) {
+        this.contentType = contentType;
     }
 
     public Long getUserId() {
@@ -97,7 +97,7 @@ public class StorageItem {
     @Override
     public String toString() {
         return "StorageItem [id=" + id + ", name=" + name + ", date=" + date + ", size=" + size + ", extension="
-                + extension + ", userId=" + userId + "]";
+                + contentType + ", userId=" + userId + "]";
     }
 
 }

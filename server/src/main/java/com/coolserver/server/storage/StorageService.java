@@ -1,31 +1,33 @@
 package com.coolserver.server.storage;
 
+import java.io.IOException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.CookieValue;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.coolserver.server.auth.APIResponse;
-import com.coolserver.server.auth.AuthService;
-
 import io.minio.MinioClient;
+import io.minio.PutObjectArgs;
+import io.minio.errors.ErrorResponseException;
+import io.minio.errors.InsufficientDataException;
+import io.minio.errors.InternalException;
+import io.minio.errors.InvalidResponseException;
+import io.minio.errors.ServerException;
+import io.minio.errors.XmlParserException;
 
 @Service
 public class StorageService {
 
-    private final AuthService authService;
     private final StorageItemRepository storageItemRepository; 
-    private final MinioClient minio;
+    private final MinioClient minioClient;
 
-    public StorageService(AuthService authService, StorageItemRepository storageItemRepository, MinioClient minio){
-        this.authService = authService;
+    public StorageService(StorageItemRepository storageItemRepository, MinioClient minioClient){
         this.storageItemRepository = storageItemRepository;
-        this.minio = minio;
+        this.minioClient = minioClient;
     }
 
 
@@ -33,15 +35,32 @@ public class StorageService {
         return storageItemRepository.findAllByUserId(id);
     }
 
-    public List<StorageItem> uploadStorageItems(@RequestParam MultipartFile[] files, Long userId){
+    public List<StorageItem> uploadStorageItems(MultipartFile[] files, Long userId){
 
         List<StorageItem> items = new ArrayList<StorageItem>();
         for (int i = 0; i < files.length; i++){
             MultipartFile file = files[i];
-            String name = file.getName();
-            StorageItem item = new StorageItem(name, LocalDateTime.now(), file.getSize(), "", userId);
+            String fileName = file.getOriginalFilename();
+            // System.out.println(fileName);
+            StorageItem item = new StorageItem(fileName, LocalDateTime.now(), file.getSize(), file.getContentType(), userId);
             items.add(item);
+            
+
+            try {
+                minioClient.putObject(
+                    PutObjectArgs.builder().bucket("storage-items").object(userId + "/" + fileName)
+                    .stream(file.getInputStream(), file.getSize(), -1)
+                    .contentType(file.getContentType())
+                    .build());
+
+            } catch (InvalidKeyException | ErrorResponseException | InsufficientDataException | InternalException
+                    | InvalidResponseException | NoSuchAlgorithmException | ServerException | XmlParserException
+                    | IllegalArgumentException | IOException e) {
+                e.printStackTrace();
+            }
         }
+
+        storageItemRepository.saveAll(items);
 
         return items;    
     }

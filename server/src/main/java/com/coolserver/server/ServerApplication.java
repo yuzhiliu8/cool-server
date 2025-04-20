@@ -21,7 +21,7 @@ public class ServerApplication {
 	}
 
 	@Bean
-	CommandLineRunner run(UserRepository userRepo, StorageItemRepository storageItemRepository){ return args -> {
+	CommandLineRunner testDB(UserRepository userRepo, StorageItemRepository storageItemRepository){ return args -> {
 		User u1 = new User();
 		u1.setRoleType(RoleType.ADMIN);
 		u1.setFirstName("Yuzhi");
@@ -40,7 +40,6 @@ public class ServerApplication {
 		storageItemRepository.save(s2);
 		storageItemRepository.save(s3);
 		};
-
 
 	}
 }
